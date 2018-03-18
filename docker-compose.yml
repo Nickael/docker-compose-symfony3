@@ -12,12 +12,16 @@ services:
             - MYSQL_DATABASE=${MYSQL_DATABASE}
         volumes:
         - mysql:/var/lib/mysql
+        networks:
+            net:
 
     adminer:
         container_name: sf_adminer
         image: adminer:4.6
         ports:
             - 8080:8080
+        networks:
+            net:
 
     php:
         image: php:7.2.3-fpm-alpine3.7
@@ -28,6 +32,8 @@ services:
         depends_on:
             - db
         working_dir: "/home/docker"
+        networks:
+            net:
 
     nginx:
         container_name: sf_ngix
@@ -39,5 +45,16 @@ services:
         volumes:
             - "./symfony:/home/docker:ro"
             - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro"
+        networks:
+            net:
+
 volumes:
     mysql:
+
+networks:
+    net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.18.0.0/24
